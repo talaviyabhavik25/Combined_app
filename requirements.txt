@@ -1,0 +1,10 @@
+streamlit 
+thermo
+pandas
+numpy
+ht
+neqsim
+fluids
+matplotlib
+scipy
+st-pages

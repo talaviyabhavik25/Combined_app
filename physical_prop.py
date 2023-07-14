@@ -41,7 +41,7 @@ flasher = FlashPureVLS(constants, correlations, liquids=[liquid], gas=gas, solid
 T1 = 273.15+30
 state_1 = flasher.flash(P=100000, T=T1,zs=zs)
     
-properties = {    "Mass": "kg",    "Length": "m",    "Time": "s",    "Temperature": "°C",    "Heat capacity": "Kcal/(kg*°C)",    "Enthalpy": "KCal/kg",    "thermal conductivity": "W/(m*°C)",    "Mass flow rate": "kg/hr",    "viscosity": "cP",    "density": "kg/m³","Cv": "Kcal/(kg*°C)","Cp": "Kcal/(kg*°C)"}
+properties = {    "Mass": "kg",    "Length": "m",    "Time": "s",    "Temperature": "°C",    "Heat capacity": "Kcal/(kg*°C)",    "Enthalpy": "KCal/kg",    "Thermal conductivity": "W/(m*°C)",    "Mass flow rate": "kg/hr",    "Viscosity": "cP",    "density": "kg/m³","Cv": "Kcal/(kg*°C)","Cp": "Kcal/(kg*°C)"}
 s = pd.Series(properties)    
 
 def density(sg,temperature):
@@ -72,9 +72,9 @@ def thermo_prop(sg,t,prop_calc_table):
         cp = (1/np.sqrt(sg))*(0.388+0.00045*t)
         cv = cp-(0.09/sg)
         latent_heat = (1/sg)*(110.9-0.09*t) * 0.555927
-        if prop_calc_table.loc['thermal conductivity','Method'] != 'Two Linear points' :
-            prop_calc_table.loc['thermal conductivity','Calculated_properties']= thermal_coductivity
-            prop_calc_table.loc['thermal conductivity','Method']= 'Bureau Report 1929'
+        if prop_calc_table.loc['Thermal conductivity','Method'] != 'Two Linear points' :
+            prop_calc_table.loc['Thermal conductivity','Calculated_properties']= thermal_coductivity
+            prop_calc_table.loc['Thermal conductivity','Method']= 'Bureau Report 1929'
         if prop_calc_table.loc['Cp','Method']!= 'Two Linear points' :
             prop_calc_table.loc['Cp','Calculated_properties']= cp
             prop_calc_table.loc['Cp','Method']= 'Bureau Report 1929'
@@ -239,7 +239,7 @@ def main_prop():
     elif phases  == 'Oil Fractions':
         
         try:
-            props = ['Cp','Cv', 'thermal conductivity','latent heat','viscosity']
+            props = ['Cp','Cv', 'Thermal conductivity','latent heat','Viscosity']
             prop_calc_table = pd.DataFrame(index=props,columns=['Calculated_properties','Method'])
             
             two_points = st.selectbox('Use 2 points of a certain property?',('No', 'Yes'), key='two_points')
@@ -261,8 +261,8 @@ def main_prop():
                     vis_analysis = float(st.number_input('Viscosity at analysis temperature in C.st', key='analysis_vis'))
                     unit = st.checkbox('viscosity Unit is in cP not C.st')
                     viscosity_calc = vis_1point(temperature,temperature_analysis,vis_analysis,sg,unit)
-                    prop_calc_table.loc['viscosity','Calculated_properties'] = viscosity_calc
-                    prop_calc_table.loc['viscosity','Method']= 'One point - A. Miadonye and V.R. Puttagunta'
+                    prop_calc_table.loc['Viscosity','Calculated_properties'] = viscosity_calc
+                    prop_calc_table.loc['Viscosity','Method']= 'One point - A. Miadonye and V.R. Puttagunta'
                     
             
             prop_calc_table = thermo_prop(sg,temperature,prop_calc_table)

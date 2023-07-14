@@ -102,7 +102,7 @@ def vis_1point(t,analysis_temp,analysis_mu,sg,unit):
         mu_calc =(10**log_mu)*(0.001*density(sg,analysis_temp))
     return mu_calc
 def thermo_prop_LorGas(type):
-        props = ['Phase','Vapor Fraction','density','Molecular Weight', 'Cp','Cv','K (Cp/Cv)', 'thermal conductivity','viscosity','Compressibility factor']
+        props = ['Phase','Vapor Fraction','density','Molecular Weight', 'Cp','Cv','K (Cp/Cv)', 'Thermal conductivity','Viscosity','Compressibility factor']
         prop_calc_table = pd.DataFrame(index=props,columns=['Calculated_properties'])
         if type == 'Gas':
             try:
@@ -135,11 +135,11 @@ def thermo_prop_LorGas(type):
                         
                         prop_calc_table.loc['Phase','Calculated_properties'] = gas_mixture.phase
                         prop_calc_table.loc['Vapor Fraction','Calculated_properties'] = gas_mixture.VF
-                        prop_calc_table.loc['thermal conductivity','Calculated_properties'] = gas_mixture.k()
+                        prop_calc_table.loc['Thermal conductivity','Calculated_properties'] = gas_mixture.k()
                         prop_calc_table.loc['density','Calculated_properties'] = gas_mixture.rho_mass()
                         prop_calc_table.loc['Cp','Calculated_properties'] = gas_mixture.Cp_mass()/4184
                         prop_calc_table.loc['Cv','Calculated_properties'] = gas_mixture.Cv_mass()/4184
-                        prop_calc_table.loc['viscosity','Calculated_properties'] = gas_mixture.mu()*1000
+                        prop_calc_table.loc['Viscosity','Calculated_properties'] = gas_mixture.mu()*1000
                         prop_calc_table.loc['Molecular Weight','Calculated_properties'] = gas_mixture.MW()
                         prop_calc_table.loc['Compressibility factor','Calculated_properties'] = gas_mixture.Z()
                         prop_calc_table.loc['K (Cp/Cv)','Calculated_properties'] = gas_mixture.isentropic_exponent()
@@ -204,13 +204,13 @@ def thermo_prop_LorGas(type):
                         prop_calc_table.loc['density','Calculated_properties'] = mixture.rho_mass()
                         prop_calc_table.loc['Phase','Calculated_properties'] = mixture.phase
                         prop_calc_table.loc['Vapor Fraction','Calculated_properties'] = mixture.VF
-                        prop_calc_table.loc['thermal conductivity','Calculated_properties'] = mixture.k()
+                        prop_calc_table.loc['Thermal conductivity','Calculated_properties'] = mixture.k()
                         
                         
                         
                         prop_calc_table.loc['Cp','Calculated_properties'] = mixture.Cp_mass()/4184
                         prop_calc_table.loc['Cv','Calculated_properties'] = mixture.Cv_mass()/4184
-                        prop_calc_table.loc['viscosity','Calculated_properties'] = mixture.mu()*1000
+                        prop_calc_table.loc['Viscosity','Calculated_properties'] = mixture.mu()*1000
                         prop_calc_table.loc['Molecular Weight','Calculated_properties'] = mixture.MW()
                         prop_calc_table.loc['Compressibility factor','Calculated_properties'] = mixture.Z()
                         prop_calc_table.loc['K (Cp/Cv)','Calculated_properties'] = mixture.isentropic_exponent()

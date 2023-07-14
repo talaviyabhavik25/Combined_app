@@ -103,7 +103,7 @@ def thermo_prop_LorGas(type):
                 composition = st.multiselect('Components', gases_list)
                 composition_table = pd.DataFrame(index=composition,columns=['mole fraction%'])
                 
-                comp_table = st.experimental_data_editor(composition_table)
+                comp_table = st.data_editor(composition_table)
                 mole_fractions = {comp_table.index[i]: comp_table['mole fraction%'].astype('float64')[i]/100 for i in range(len(comp_table.index))}
                 if sum(comp_table['mole fraction%'].astype('float64')) == 100:
                         st.success('Composition in Mol. percent completed!', icon="✅")
@@ -155,7 +155,7 @@ def thermo_prop_LorGas(type):
                 composition = st.multiselect('Components', liquid_list)
                 composition_table = pd.DataFrame(index=composition,columns=['Volume fraction%'])
                 
-                comp_table = st.experimental_data_editor(composition_table)
+                comp_table = st.data_editor(composition_table)
                 
                 
                 mole_fractions = {comp_table.index[i]: comp_table['Volume fraction%'].astype('float64')[i]/100 for i in range(len(comp_table.index))}
@@ -240,7 +240,7 @@ def main():
                 temperature1 = float(st.number_input('point 1 Temperature in C', key='T1')) 
                 temperature2 = float(st.number_input('point 1 Temperature in C', key='T2')) 
                 prop_table = pd.DataFrame(index=prop_menu,columns=['point 1','point 2'])
-                prop_table_st = st.experimental_data_editor(prop_table)
+                prop_table_st = st.data_editor(prop_table)
                 sg = float(st.number_input('Specific gravity at 15.56 C'))
                 
             if two_points != 'Yes':           

@@ -21,10 +21,10 @@ def load_consts():
       
     # Call load method to deserialze
               correlations = pickle.load(file)    
-         with open('consts.pkl', 'rb') as file:
+         with open('consts.pkl', 'rb') as file2:
       
     # Call load method to deserialze
-              constants = pickle.load(file)
+              constants = pickle.load(file2)
          #if 'constants' not in st.session_state:
          #st.session_state.constants, st.session_state.correlations = ChemicalConstantsPackage.from_IDs(c)
          kijs = IPDB.get_ip_asymmetric_matrix('ChemSep PR', constants.CASs, 'kij')

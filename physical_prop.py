@@ -17,8 +17,16 @@ c = gases_list + liquid_list
 c.remove('water')
 @st.cache_data
 def load_consts():
-         if 'constants' not in st.session_state:
-         st.session_state.constants, st.session_state.correlations = ChemicalConstantsPackage.from_IDs(c)
+         with open('props.pkl', 'rb') as file:
+      
+    # Call load method to deserialze
+              correlations = pickle.load(file)    
+         with open('consts.pkl', 'rb') as file:
+      
+    # Call load method to deserialze
+              constants = pickle.load(file)
+         #if 'constants' not in st.session_state:
+         #st.session_state.constants, st.session_state.correlations = ChemicalConstantsPackage.from_IDs(c)
          kijs = IPDB.get_ip_asymmetric_matrix('ChemSep PR', constants.CASs, 'kij')
          return st.session_state.constants, st.session_state.correlations, kijs
 constants, correlations,kijs = load_consts()

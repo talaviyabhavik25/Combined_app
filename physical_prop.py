@@ -19,7 +19,11 @@ def load_table():
 if "rating_table" not in st.session_state:
     st.session_state.rating_table = load_table().iloc[2:12,:]
                     
-            
+def convert_to_float_or_string(s):
+    try:
+        return str(round(float(s), 5))
+    except ValueError:
+        return s           
 gases_list = ['water', 'hydrogen', 'nitrogen', 'carbon dioxide', 'hydrogen sulfide','methane',
 'ethane', 'propane', 'isobutane', 'n-butane', 'isopentane', 'n-pentane', 'hexane',
 'heptane', 'octane', 'nonane','ammonia']
@@ -173,7 +177,7 @@ def thermo_prop_LorGas(type):
                         #st.write(-gas_mixture.Hc_lower_mass()) #/4184)
                         prop_calc_table = prop_calc_table.merge(s.rename('Units'), left_index=True,right_index=True, how='left')
                         prop_calc_table.loc[:,'Method']= 'Thermo Library'
-                        
+                        prop_calc_table['Calculated_properties'] = prop_calc_table['Calculated_properties'].apply(lambda x: convert_to_float_or_string(x))  
                         st.write(prop_calc_table)
                         
                             
@@ -243,7 +247,7 @@ def thermo_prop_LorGas(type):
                         prop_calc_table.loc['LHV','Calculated_properties'] = -sum(pd.Series(zs)*pd.Series(mixture.Hcs_lower_mass).fillna(0)*(pd.Series(mixture.MWs)/mixture.MW()))/4184
                         prop_calc_table = prop_calc_table.merge(s.rename('Units'), left_index=True,right_index=True, how='left')
                         prop_calc_table.loc[:,'Method']= 'Thermo Library'
-                        
+                        prop_calc_table['Calculated_properties'] = prop_calc_table['Calculated_properties'].apply(lambda x: convert_to_float_or_string(x)) 
                         
                         #if 'water' in mole_fractions.keys():
                          #   mixture2 = Mixture([i for i in mole_fractions.keys()], ws=[i for i in mole_fractions.values()], T=temperature_K, P=pressure, pkg= GceosBase)
@@ -327,10 +331,12 @@ def main():
                                 prop_calc_table.loc[i,'Calculated_properties'] = viscosity
                                 prop_calc_table.loc[i,'Method']= 'Two Log points'
                                 prop_calc_table = prop_calc_table.merge(s.rename('Units'), left_index=True,right_index=True).reindex(columns=['Calculated_properties', 'Units', 'Method'])
+                        prop_calc_table['Calculated_properties'] = prop_calc_table['Calculated_properties'].apply(lambda x: convert_to_float_or_string(x)) 
                         st.write(prop_calc_table.dropna(how='any'))
                     else:
                         
                         prop_calc_table = prop_calc_table.merge(s.rename('Units'), left_index=True,right_index=True).reindex(columns=['Calculated_properties', 'Units', 'Method'])
+                        prop_calc_table['Calculated_properties'] = prop_calc_table['Calculated_properties'].apply(lambda x: convert_to_float_or_string(x)) 
                         st.write(prop_calc_table.dropna(how='any'))
                 except (ValueError,np.linalg.LinAlgError): st.write('Please check your points input')
 if __name__ == '__main__':

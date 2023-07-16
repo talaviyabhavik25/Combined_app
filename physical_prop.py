@@ -30,19 +30,22 @@ c.remove('water')
     #st.session_state.constants, st.session_state.correlations = ChemicalConstantsPackage.from_IDs(c)
 @st.cache_data
 def load_consts():
-    with open('props.pkl', 'rb') as file:
+    if 'constants' not in st.session_state:
+        st.session_state.constants, st.session_state.correlations = ChemicalConstantsPackage.from_IDs(c)
+    #with open('props.pkl', 'rb') as file:
         
         # Call load method to deserialze
-        correlations = pickle.load(file)    
-    with open('consts.pkl', 'rb') as file2:
+        #correlations = pickle.load(file)    
+    #with open('consts.pkl', 'rb') as file2:
         
         # Call load method to deserialze
-        constants = pickle.load(file2)
+        #constants = pickle.load(file2)
+
     with open('kijs.pkl', 'rb') as file3:
         
         # Call load method to deserialze
         kijs = pickle.load(file3)
-    return constants, correlations, kijs
+    return st.session_state.constants, st.session_state.correlations, kijs
 constants, correlations,kijs = load_consts()
 #constants = st.session_state.constants
 #correlations = st.session_state.correlations

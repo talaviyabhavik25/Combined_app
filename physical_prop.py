@@ -87,10 +87,12 @@ def density(sg,temperature):
                 elif api <= 88.9:
                     eta= 0.0008
                 elif api <= 93.9:
-                    eta= 0.00035 
+                    eta= 0.00085 
                 elif api <= 100:
+                    eta= 0.0009
+                elif api > 100:
                     eta= 0.0009   
-                else: st.write("please enter a valid Specific gravity or use user-defined compositions in Gases' option") 
+                #else: st.write("please enter a valid Specific gravity or use user-defined compositions in Gases' option") 
                 density = sg*1000*(1-eta*((temperature*1.8+32)-60))
                 return density
 
@@ -129,6 +131,24 @@ def vis_1point(t,analysis_temp,analysis_mu,sg,unit):
         log_mu = (b/(1+((T-analysis_temp)/310.93))**s)+c
         mu_calc =(10**log_mu)*(0.001*density(sg,analysis_temp))
     return mu_calc
+def vis_coker(temperature,sg):
+    api = (141.5/sg) - 131.5
+    t=(1.8*temperature)+32
+    #t=temperature
+    if t >= 50 and t <= 300:
+        if api >= 34:
+            mu = (3.518-(0.01591*t)+1.734*(10**-5)*(t**2))
+        elif api >=30:
+            mu = (5.804-(0.02983*t)+1.2485*(10**-5)*(t**2))
+        elif api >= 20:
+            mu = (9.21-(0.0469*t)+(3.167*(10**-5)*(t**2)))
+        elif api >= 10:
+            mu = (18.919-(0.1322*t)+(2.431*(10**-5)*(t**2)))
+    else:
+        t_c = temperature
+        analysis_mu_ = vis_coker(37.38,sg)
+        mu = vis_1point(t_c,37.38,analysis_mu_,sg,True)
+    return mu 
 def thermo_prop_LorGas(type):
         props = ['Phase','Vapor Fraction','density','Molecular Weight', 'Cp','Cv','K (Cp/Cv)', 'thermal conductivity','viscosity','Compressibility factor']
         prop_calc_table = pd.DataFrame(index=props,columns=['Calculated_properties'])
@@ -333,8 +353,16 @@ def main():
                                 prop_calc_table = prop_calc_table.merge(s.rename('Units'), left_index=True,right_index=True).reindex(columns=['Calculated_properties', 'Units', 'Method'])
                         prop_calc_table['Calculated_properties'] = prop_calc_table['Calculated_properties'].apply(lambda x: convert_to_float_or_string(x)) 
                         st.write(prop_calc_table.dropna(how='any'))
+                    elif vis_1point_select == 'Yes':
+                                viscosity_calc = vis_1point(temperature,temperature_analysis,vis_analysis,sg,unit)
+                                prop_calc_table.loc['viscosity','Calculated_properties'] = viscosity_calc
+                                prop_calc_table=prop_calc_table.dropna(how='any')        
+                                prop_calc_table['Calculated_properties'] = prop_calc_table['Calculated_properties'].apply(lambda x: convert_to_float_or_string(x))
+                                st.write(prop_calc_table)
                     else:
-                        
+                        prop_calc_table.loc['viscosity','Calculated_properties'] =vis_coker(temperature,sg)
+                        prop_calc_table.loc['viscosity','Method'] = 'Maxwell approx.'
+                        #prop_calc_table=prop_calc_table.dropna(how='any')    
                         prop_calc_table = prop_calc_table.merge(s.rename('Units'), left_index=True,right_index=True).reindex(columns=['Calculated_properties', 'Units', 'Method'])
                         prop_calc_table['Calculated_properties'] = prop_calc_table['Calculated_properties'].apply(lambda x: convert_to_float_or_string(x)) 
                         st.write(prop_calc_table.dropna(how='any'))

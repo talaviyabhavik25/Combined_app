@@ -402,7 +402,7 @@ def main():
                         prop_calc_table = prop_calc_table.merge(s.rename('Units'), left_index=True,right_index=True).reindex(columns=['Calculated_properties', 'Units', 'Method'])
                         prop_calc_table['Calculated_properties'] = prop_calc_table['Calculated_properties'].apply(lambda x: convert_to_float_or_string(x)) 
                         st.write(prop_calc_table.dropna(how='any'))
-                except (ValueError,np.linalg.LinAlgError): st.write('Please check your points input')
+                except (ValueError,np.linalg.LinAlgError, ZeroDivisionError): st.write('Please check your points input')
 if __name__ == '__main__':
     main()
  

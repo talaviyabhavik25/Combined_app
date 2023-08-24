@@ -65,7 +65,7 @@ flasher = FlashPureVLS(constants, correlations, liquids=[liquid], gas=gas, solid
 T1 = 273.15+30
 state_1 = flasher.flash(P=100000, T=T1,zs=zs)
     
-properties = {    "Mass": "kg",    "Length": "m",    "Time": "s",    "Temperature": "°C",    "Heat capacity": "Kcal/(kg*°C)",    "Enthalpy": "KCal/kg",    "thermal conductivity": "W/(m*°C)",    "Mass flow rate": "kg/hr",    "viscosity": "cP",    "density": "kg/m³","Cv": "Kcal/(kg*°C)","Cp": "Kcal/(kg*°C)"}
+properties = {    "Mass": "kg",    "Length": "m",    "Time": "s",    "Temperature": "°C",    "Heat capacity": "Kcal/(kg*°C)",    "Enthalpy": "KCal/kg",    "thermal conductivity": "W/(m*°C)",    "Mass flow rate": "kg/hr",    "viscosity": "cP",    "density": "kg/m³","Cv": "Kcal/(kg*°C)","Cp": "Kcal/(kg*°C)",'Gas thermal conductivity':"W/(m*°C)",'Mol. Weight':'-','Gas Density':"kg/m³",'Gas Viscosity':"cP"}
 s = pd.Series(properties)    
 def convert_to_float_or_string(s):
     try:
@@ -96,12 +96,18 @@ def density(sg,temperature):
                 density = sg*1000*(1-eta*((temperature*1.8+32)-60))
                 return density
 
-def thermo_prop(sg,t,prop_calc_table):
+def thermo_prop(sg,t,p,prop_calc_table):
         t = 1.8*t+32
+        api = (141.5/sg)-131.5
         thermal_coductivity = (0.813/sg)*(1-0.0003*(t-32)) *0.14422790000000002
         cp = (1/np.sqrt(sg))*(0.388+0.00045*t)
         cv = cp-(0.09/sg)
         latent_heat = (1/sg)*(110.9-0.09*t) * 0.555927
+        m_wt = 1/(0.0001644*api-0.000972)
+        R = 0.730240507295273
+        rho_gas = 16.018463*10**4/(R*(t+460)/p*m_wt) #16.018463/(0.242*(t+460)/p*14.7)*((1.03-sg)/sg)
+        k_gas = (-0.000500777 +1.0906*(10**-5)*t +0.061137256/np.sqrt(m_wt) + 0.000158966*t/np.sqrt(m_wt))*1.730735
+        mu_gas = -0.0092696 +np.sqrt((((t-32)/1.8)+273))*(0.001383-5.9712*(10**-5)*np.sqrt(m_wt))+1.1249*(10**-5)*m_wt
         if prop_calc_table.loc['thermal conductivity','Method'] != 'Two Linear points' :
             prop_calc_table.loc['thermal conductivity','Calculated_properties']= thermal_coductivity
             prop_calc_table.loc['thermal conductivity','Method']= 'Bureau Report 1929'
@@ -110,7 +116,12 @@ def thermo_prop(sg,t,prop_calc_table):
             prop_calc_table.loc['Cp','Method']= 'Bureau Report 1929'
         prop_calc_table.loc['Cv','Calculated_properties'] = cv
         prop_calc_table.loc['latent heat','Calculated_properties']= latent_heat
-        prop_calc_table.loc[['Cv','latent heat'],'Method']= 'Bureau Report 1929'
+        prop_calc_table.loc['Mol. Weight','Calculated_properties']= m_wt
+        prop_calc_table.loc['Gas Density','Calculated_properties'] = rho_gas
+        prop_calc_table.loc['Gas thermal conductivity','Calculated_properties'] = k_gas
+        prop_calc_table.loc['Gas Viscosity','Calculated_properties'] = mu_gas
+        prop_calc_table.loc[['Cv','latent heat','Gas Viscosity','Gas Density','Mol. Weight'],'Method']= 'Bureau Report 1929'
+        prop_calc_table.loc['Gas thermal conductivity','Method'] = 'Maxwell approx.'
         return prop_calc_table
 def vis_1point(t,analysis_temp,analysis_mu,sg,unit):
     if not unit:
@@ -316,6 +327,7 @@ def main():
             
             two_points = st.selectbox('Use 2 points of a certain property?',('No', 'Yes'), key='two_points')
             if two_points == "Yes":
+                pressure = float(st.number_input('Pressure in kg/cm2.a', key='target_p'))
                 temperature = float(st.number_input('fluid Temperature in C', key='target_temp')) 
                 prop_menu = st.multiselect('select property with two data points',['viscosity', 'specific gravity', 'Cp', 'thermal conductivity'])
                 temperature1 = float(st.number_input('point 1 Temperature in C', key='T1')) 
@@ -324,7 +336,8 @@ def main():
                 prop_table_st = st.data_editor(prop_table)
                 sg = float(st.number_input('Specific gravity at 15.56 C'))
                 
-            if two_points != 'Yes':           
+            if two_points != 'Yes':   
+                pressure = float(st.number_input('Pressure in kg/cm2.a', key='target_p1'))        
                 temperature = float(st.number_input('fluid Temperature in C', key='target_temp1'))
                 sg = float(st.number_input('Specific gravity at 15.56 C'))
                 vis_1point_select  = st.selectbox('Calculate viscosity using 1 point?',('No', 'Yes'), key='vis_1pointer')
@@ -337,7 +350,7 @@ def main():
                     prop_calc_table.loc['viscosity','Method']= 'One point - A. Miadonye and V.R. Puttagunta'
                     
             
-            prop_calc_table = thermo_prop(sg,temperature,prop_calc_table)
+            prop_calc_table = thermo_prop(sg,temperature,pressure ,prop_calc_table)
             prop_calc_table.loc['density'] = [density(sg,temperature),'Nelson']
         except (ZeroDivisionError,UnboundLocalError): pass
         if st.button("Calculate", key = 'calculations_tableLiq'):

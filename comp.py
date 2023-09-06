@@ -2,8 +2,11 @@ import pandas as pd
 import numpy as np
 import streamlit as st
 
-url_1 = 'http://raw.githubusercontent.com/Ahmedhassan676/compressor_evaluation/main/comp.csv'
-df_comp_table = pd.read_csv(url_1)
+@st.cache_data
+def cache_comp():
+    url_1 = 'http://raw.githubusercontent.com/Ahmedhassan676/compressor_evaluation/main/comp.csv'
+    return pd.read_csv(url_1)
+df_comp_table = cache_comp()
 
 def Z_calculations(df,t_suc,p_suc):
         pc = (df['mol%']*df['Pc']).sum() * 0.01

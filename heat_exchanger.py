@@ -85,7 +85,8 @@ def edit_summary_table(df):
     df2 = pd.DataFrame()
     df2['index'] = df.iloc[:,0]
     if len(df2['index']) == 24:
-        df2['Units'] = units_list[:7] +list(units_list[10]) +units_list[18:26] +units_list[26:34]
+        
+        df2['Units'] = (units_list[1:8] +list(units_list[11]) +units_list[19:27] +units_list[19:27])
     else:    df2['Units'] = units_list[:len(df2['index'])]
 
     
@@ -669,7 +670,7 @@ def main_heat_exchanger():
             if s_prop == 'No':
                 st.session_state.rating_var = st.data_editor(st.session_state.rating_table)
             else:
-                st.session_state.rating_var = st.data_editor(main_prop())
+                st.session_state.rating_var = st.data_editor(main_prop_heat())
         if st.session_state['current_step'] == 2:
             st.session_state.rating_var = st.data_editor(st.session_state.rating_var)
         if st.session_state['current_step'] == 3:
@@ -1113,7 +1114,7 @@ def main_heat_exchanger():
             if s_prop == 'No':
                 st.session_state.rating_var = st.data_editor(st.session_state.rating_table)
             else:
-                st.session_state.rating_var = st.data_editor(main_prop())
+                st.session_state.rating_var = st.data_editor(main_prop_heat())
             rating_df = st.session_state.rating_var
             s2 = st.selectbox('Select Heat Balance variable',('Hot side mass flow','Hot side T1','Hot side T2','Cold side mass flow','Cold side T1','Cold side T2'), key = 'HB') 
             s3 = st.selectbox('Number of Shells',(1,2,3,4,5,6,7,8), key='shells')
@@ -1307,6 +1308,7 @@ def submit(button,ntu_calc,df,check):
                   st.session_state.calculations_df = st.session_state.calculations_df.dropna(how='any')
                   st.session_state.summary = pd.concat([st.session_state.calculations_df, st.session_state.para_input_df])
                   st.session_state.summary['summary'] = st.session_state.summary['summary'].apply(lambda x: convert_to_float_or_string(x))
+                  st.write(st.session_state.summary.reset_index())
                   st.session_state.summary = edit_summary_table(st.session_state.summary.reset_index())
                   st.write(st.session_state.summary.loc[:, ['Units','summary']])
                   st.session_state.ntu_df_simple = modify_ntu(st.session_state.ntu_df_simple,True)

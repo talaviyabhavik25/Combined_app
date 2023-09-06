@@ -63,14 +63,16 @@ alpha_cs = [[0.0,  0.3,  0.3,  0.3,  0.3,  0.3,  0.3,  0.3,  0.3,  0.3,  0.3,  0
       
     # Call load method to deserialze
     #kijs = pickle.load(file)
-zs = [1/(len(c)) for i in range(len(c))]
-eos_kwargs = {'Pcs': constants.Pcs, 'Tcs': constants.Tcs, 'omegas': constants.omegas, 'kijs': kijs}
-gas = CEOSGas(PRMIX, eos_kwargs=eos_kwargs, HeatCapacityGases=correlations.HeatCapacityGases)
-liquid = CEOSLiquid(PRMIX, eos_kwargs=eos_kwargs, HeatCapacityGases=correlations.HeatCapacityGases)
-flasher = FlashPureVLS(constants, correlations, liquids=[liquid], gas=gas, solids=[])
-T1 = 273.15+30
-state_1 = flasher.flash(P=100000, T=T1,zs=zs)
-
+@st.cache_data
+def load_flasher():
+        zs = [1/(len(c)) for i in range(len(c))]
+        eos_kwargs = {'Pcs': constants.Pcs, 'Tcs': constants.Tcs, 'omegas': constants.omegas, 'kijs': kijs}
+        gas = CEOSGas(PRMIX, eos_kwargs=eos_kwargs, HeatCapacityGases=correlations.HeatCapacityGases)
+        liquid = CEOSLiquid(PRMIX, eos_kwargs=eos_kwargs, HeatCapacityGases=correlations.HeatCapacityGases)
+        flasher = FlashPureVLS(constants, correlations, liquids=[liquid], gas=gas, solids=[])
+        T1 = 273.15+30
+        return flasher.flash(P=100000, T=T1,zs=zs), eos_kwargs
+state_1, eos_kwargs  = load_flasher()
 
 properties = {    "Mass": "kg",    "Length": "m",    "Time": "s",    "Temperature": "°C",    "Heat capacity": "Kcal/(kg*°C)",    "Enthalpy": "KCal/kg",    "thermal conductivity": "W/(m*°C)",    "Mass flow rate": "kg/hr",    "viscosity": "cP",    "density": "kg/m³","Cv": "Kcal/(kg*°C)","Cp": "Kcal/(kg*°C)"}
 s = pd.Series(properties)    
@@ -396,7 +398,7 @@ def thermo_prop_LorGas(type):
             
              
         
-def main_prop():
+def main_prop_heat():
     
     phases  = st.selectbox('fluids presesnt',('Oil Fractions', 'liquid', 'Gas'), key='phases')
     if phases  == 'Gas':
@@ -526,5 +528,5 @@ def main_prop():
             return st.session_state.rating_table
     
 if __name__ == '__main__':
-    main_prop()
+    main_prop_heat()
  

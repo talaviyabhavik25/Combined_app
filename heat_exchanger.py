@@ -1308,7 +1308,7 @@ def submit(button,ntu_calc,df,check):
                   st.session_state.calculations_df = st.session_state.calculations_df.dropna(how='any')
                   st.session_state.summary = pd.concat([st.session_state.calculations_df, st.session_state.para_input_df])
                   st.session_state.summary['summary'] = st.session_state.summary['summary'].apply(lambda x: convert_to_float_or_string(x))
-                  st.write(st.session_state.summary.reset_index())
+                  
                   st.session_state.summary = edit_summary_table(st.session_state.summary.reset_index())
                   st.write(st.session_state.summary.loc[:, ['Units','summary']])
                   st.session_state.ntu_df_simple = modify_ntu(st.session_state.ntu_df_simple,True)
